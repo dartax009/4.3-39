@@ -1,17 +1,18 @@
 #include "fwlist.h"
 
-void push (s_mas **head, const uint8_t data)
+void push (s_mas **head, const void *val)
 {
 	s_mas *tmp = (s_mas *) malloc(sizeof(s_mas));
 
-	tmp->value	= data;
-	tmp->next	= (*head);
-	(*head)		= tmp;
+	memcpy(&tmp->value, val, sizeof(s_element));
+
+	tmp->next		= (*head);
+	(*head)			= tmp;
 
 	return;
 }
 
-uint8_t pop (s_mas **head, uint8_t *val)
+uint8_t pop (s_mas **head, void *val)
 {
 	s_mas *tmp = NULL;
 
@@ -19,55 +20,38 @@ uint8_t pop (s_mas **head, uint8_t *val)
 		return 1;
 
 	tmp = (*head);
-	*val = tmp->value;
+	memcpy(val, &tmp->value, sizeof(s_element));
 	(*head) = (*head)->next;
 	free(tmp);
 
 	return 0;
 }
 
-uint8_t getN (s_mas *head, const uint32_t n, uint8_t *val)
+s_mas *findN (s_mas *head, const uint64_t n)
 {
-	for (uint32_t i=0; i<n; i++)
+	for (uint64_t i=0; i<n; i++)
 	{
 		head = head->next;
 		if (head == NULL)
-			return 1;
+			return NULL;
 	}
-	*val = head->value;
-
-	return 0;
+	return head;
 }
 
-uint8_t pushN (s_mas *head, const uint32_t n, const uint8_t val)
+uint8_t pushN (s_mas *head, const uint32_t n, const void *val)
 {
-	for(uint32_t i=0; i<n; i++)
-	{
-		head = head->next;
-		if (head == NULL)
-			return 1;
-	}
-	head->value = val;
-
-	return 0;
-}
-
-uint8_t sumN (s_mas *head, const uint32_t n, const uint8_t val)
-{
-	for(uint32_t i=0; i<n; i++)
-	{
-		head = head->next;
-		if (head == NULL)
-			return 1;
-	}
-	head->value += val;
+	head = findN(head, n);
+	if (head == NULL)
+		return 1;
+	else
+		memcpy(&head->value, val, n);
 
 	return 0;
 }
 
 s_mas *findLast (s_mas *head)
 {
-	if (head== NULL)
+	if (head==NULL)
 		return NULL;
 
 	while (head->next != NULL)
@@ -76,17 +60,24 @@ s_mas *findLast (s_mas *head)
 	return head;
 }
 
-void pushBack (s_mas *head, const uint8_t data)
+void pushBack (s_mas **head, const void *val)
 {
-	s_mas *last = findLast(head);
+	s_mas *last = findLast((*head));
+
 	s_mas *tmp = (s_mas *) malloc(sizeof(s_mas));
 
-	tmp->value	= data;
-	tmp->next	= NULL;
-	last->next = tmp;
+	memcpy(&tmp->value, val, sizeof(s_element));
+	tmp->next = NULL;
+
+	if (last == NULL)
+		(*head) = tmp;
+	else
+		(*head)->next = tmp;
+
+	return;
 }
 
-uint8_t popBack (s_mas **head, uint8_t *val)
+uint8_t popBack (s_mas **head, void *val)
 {
 	s_mas *tmp = NULL;
 
@@ -95,7 +86,7 @@ uint8_t popBack (s_mas **head, uint8_t *val)
 
 	if ((*head)->next == NULL)
 	{
-		*val = (*head)->value;
+		memcpy(val, &(*head)->value, sizeof(s_element));
 		free(*head);
 		*head = NULL;
 		return 0;
@@ -106,7 +97,8 @@ uint8_t popBack (s_mas **head, uint8_t *val)
 	while (tmp->next->next)
 		tmp = tmp->next;
 
-	*val = tmp->next->value;
+	memcpy(val, &tmp->next->value, sizeof(s_element));
+
 	free(tmp->next);
 	tmp->next = NULL;
 	return 0;
