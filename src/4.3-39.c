@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <windows.h>
-#include "fwlist.h"
+#include <fwlist/fwlist.h>
 
 int main()
 {

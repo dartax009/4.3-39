@@ -4,7 +4,11 @@ CFLAGS += -Wall
 
 COMPIL += P:/Coder_experiments/$(P_NAME)/src/
 
-COMPONETS += $(COMPIL)fwlist.c
+MY_INCLUDE = P:/Coder_experiments/include/
+INCLUDE = -IP:/Coder_experiments/include/
+
+COMPONETS += $(MY_INCLUDE)fwlist/fwlist.c
+
 
 CREATIN_B += P:/Coder_experiments/$(P_NAME)/bin/
 CREATIN_D += P:/Coder_experiments/$(P_NAME)/debug/
@@ -16,7 +20,7 @@ RM = RMDIR /S /Q
 all:
 	if exist "bin" make clean_b
 	md bin
-	gcc.exe $(COMPIL)$(P_NAME).c $(COMPONETS) -o $(CREATIN_B)$(P_NAME).exe $(CFLAGS)
+	gcc.exe $(COMPIL)$(P_NAME).c $(COMPONETS) $(INCLUDE) -o $(CREATIN_B)$(P_NAME).exe $(CFLAGS)
 
 clean_d:
 	if exist "debug" $(RM) debug
