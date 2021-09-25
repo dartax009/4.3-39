@@ -4,10 +4,7 @@ CFLAGS += -Wall
 
 COMPIL += P:/Coder_experiments/$(P_NAME)/src/
 
-MY_INCLUDE = P:/Coder_experiments/include/
-INCLUDE = -IP:/Coder_experiments/include/
-
-COMPONETS += $(MY_INCLUDE)fwlist/fwlist.c
+COMPONETS += $(COMPIL)includ/fwlist/fwlist.c
 
 
 CREATIN_B += P:/Coder_experiments/$(P_NAME)/bin/
