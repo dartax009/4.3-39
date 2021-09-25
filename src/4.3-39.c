@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <windows.h>
-#include "fwlist.h"
+#include "includ/fwlist/fwlist.h"
 
 int main()
 {
@@ -11,84 +11,64 @@ int main()
 	SetConsoleOutputCP (65001);
 
 	uint32_t in		= 0;
-	bool flag		= false;
-	uint8_t	val1	= 0;			//Для хронения значения из первого списка
-	uint8_t	val2	= 0;			//Для хронения значения из второго списка
+	bool flag		= false;		//Для определения положения
+	s_mas *val1		= NULL;			//Для хранения значения из списка
+	s_mas *val2		= NULL;			//Для хранения значения из списка
 	uint8_t rez		= 0;			//Результат сложения
-	uint32_t count	= 0;			//Счетчик циклов
+	s_mas *mas		= NULL;			//Список
+	s_element el	= {0};			//Вспомогательная переменная
 
-	s_mas *mas1 = NULL;				//Первый список
-	s_mas *mas2 = NULL;				//Второй список
-
+	printf("Какое число хотим?");
 	scanf("%d", &in);
 
-	push(&mas1, 0);
-	push(&mas2, 1);
+	if (in == 0)
+	{
+		printf("Вот такое вот число: 0");
+		goto _END;
+	}
+	if (in == 1)
+	{
+		printf("Вот такое вот число: 1");
+		goto _END;
+	}
 
+	{
+		uint8_t i[2]={0,1};
+		push(&mas, i);
+	}
 
 	for (uint32_t i = 2; i<=in; i++)
 	{
-		flag = (i%2) == 0;
-
-		if(flag)
+		flag = (i%2) != 0;
+		val1 = mas;
+		while (1)
 		{
-			while (1)
+			rez = val1->value.data[0] + val1->value.data[1];
+			val1->value.data[flag] = (uint8_t)rez%10;
+			if (rez>9)
 			{
-				if (getN(mas1, count, &val1))
-					break;
-				getN(mas2, count, &val2);
-
-				rez=val1+val2;
-				pushN(mas1, count, (uint8_t)rez%10);		//Кладем сумму в элемент
-				if (((uint8_t)rez/10)!=0)					//Результат больше 10
+				val2 = val1->next;
+				if(val2 == NULL)
 				{
-					if(sumN(mas1, (count+1), (uint8_t)rez/10))	//Есть еще элементы? Если да, то плюсуем к нему значение
-					{
-						pushBack(mas1, (uint8_t)rez/10);
-						pushBack(mas2, 0);
-						if ((uint8_t)rez/10 < 9)				//Последнее записанное число меньше 10? Если да, то расчет этого числа закончен
-							break;
-					}
-				}
-				count++;
-			}
-		}
-		else
-		{
-			while (1)
-			{
-				if (getN(mas1, count, &val1))
+					el.data[flag] = (uint8_t)rez/10;
+					pushBack(&val1, &el);
 					break;
-				getN(mas2, count, &val2);
-
-				rez=val1+val2;
-				pushN(mas2, count, (uint8_t)rez%10);		//Кладем сумму в элемент
-				if (((uint8_t)rez/10)!=0)					//Результат больше 10
-				{
-					if(sumN(mas2, (count+1), (uint8_t)rez/10))	//Есть еще элементы? Если да, то плюсуем к нему значение
-					{
-						pushBack(mas2, (uint8_t)rez/10);
-						pushBack(mas1, 0);
-						if ((uint8_t)rez/10 < 9)				//Последнее записанное число меньше 10? Если да, то расчет этого числа закончен
-							break;
-					}
 				}
-				count++;
+				val2->value.data[flag] += (uint8_t)rez/10;
 			}
+			val1 = findN(val1, 1);
+			if (val1 == NULL)
+				break;
 		}
-		count=0;
+		el.data[flag] = 0;
 	}
 
-	if (flag || in==0)
-	{
-		while (popBack(&mas1, &val1) == 0)
-			printf("%d", val1);
-	}
-	else
-	{
-		while (popBack(&mas2, &val2) == 0)
-			printf("%d", val2);
-	}
+	// flag = (in%2) != 0;
+	printf("Вот такое вот число:\n");
+	while (popBack(&mas, &el) == 0)
+		printf("%d", el.data[flag]);
+
+	_END:
 	printf("\n");
 	system("pause");
 
