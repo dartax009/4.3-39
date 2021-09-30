@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <windows.h>
-#include "includ/fwlist/fwlist.h"
+#include <fwlist/fwlist.h>
 
 int main()
 {
@@ -16,26 +16,18 @@ int main()
 	s_mas *val2		= NULL;			//Для хранения значения из списка
 	uint8_t rez		= 0;			//Результат сложения
 	s_mas *mas		= NULL;			//Список
-	s_element el	= {0};			//Вспомогательная переменная
+	uint8_t el[2]={0,1};			//Вспомогательный массив
 
 	printf("Какое число хотим?");
 	scanf("%d", &in);
 
-	if (in == 0)
+	if (in == 0 || in == 1)
 	{
-		printf("Вот такое вот число: 0");
-		goto _END;
-	}
-	if (in == 1)
-	{
-		printf("Вот такое вот число: 1");
+		printf("Вот такое вот число: %d\n", el[in]);
 		goto _END;
 	}
 
-	{
-		uint8_t i[2]={0,1};
-		push(&mas, i);
-	}
+	push(&mas, el, sizeof(el));
 
 	for (uint32_t i = 2; i<=in; i++)
 	{
@@ -43,30 +35,29 @@ int main()
 		val1 = mas;
 		while (1)
 		{
-			rez = val1->value.data[0] + val1->value.data[1];
-			val1->value.data[flag] = (uint8_t)rez%10;
+			rez = ((uint8_t *)val1->value)[0] + ((uint8_t *)val1->value)[1];
+			((uint8_t *)val1->value)[flag] = (uint8_t)rez%10;
 			if (rez>9)
 			{
 				val2 = val1->next;
 				if(val2 == NULL)
 				{
-					el.data[flag] = (uint8_t)rez/10;
-					pushBack(&val1, &el);
+					el[flag] = (uint8_t)rez/10;
+					pushBack(&val1, el, sizeof(el));
 					break;
 				}
-				val2->value.data[flag] += (uint8_t)rez/10;
+				((uint8_t *)val2->value)[flag] += (uint8_t)rez/10;
 			}
 			val1 = findN(val1, 1);
 			if (val1 == NULL)
 				break;
 		}
-		el.data[flag] = 0;
+		el[flag] = 0;
 	}
 
-	// flag = (in%2) != 0;
 	printf("Вот такое вот число:\n");
-	while (popBack(&mas, &el) == 0)
-		printf("%d", el.data[flag]);
+	while (popBack(&mas, el, sizeof(el)) == 0)
+		printf("%d", el[flag]);
 
 	_END:
 	printf("\n");
