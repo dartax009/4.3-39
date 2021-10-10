@@ -6,13 +6,13 @@
 #include <time.h>
 #include <fwlist/fwlist.h>
 
-// #define SUPER_SPID							//Режим ускорения расчета, но высокой потери точности
+// #define SUPER_SPID						//Режим ускорения расчета, но высокой потери точности
 
 #ifdef	SUPER_SPID
-	#define COUNT_VICTIM		1000		//Регулировка потери точности
-	#define NUMBER_OF_VICTIMS	10			//При ускоренном режиме, жертвует указанное кол-во знаков не давая подняться больше COUNT_VICTIM
+	#define COUNT_VICTIM		10			//Регулировка потери точности
+	#define NUMBER_OF_VICTIMS	2			//При ускоренном режиме, жертвует указанное кол-во знаков не давая подняться больше COUNT_VICTIM
 #else
-	#define COUNT_VICTIM		100			//Регулировка потери точности
+	#define COUNT_VICTIM		1000			//Регулировка потери точности
 #endif
 
 /*Удаления не используемых элементов из памяти. Не значительно снижает скорость, но позволяет не раздуваться программе*/
@@ -109,7 +109,8 @@ int main()
 	while (popBack(&mas, el, sizeof(el)) == 0)
 		printf("%d", el[flag]);
 
-	printf("*10^%llu", degree);
+	if (degree != 0)
+		printf("*10^%llu", degree);
 
 	printf("\n\nВремени потрачено на расчет: %llu", start);
 
